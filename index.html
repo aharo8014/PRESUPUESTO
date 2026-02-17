@@ -6,574 +6,790 @@
   <title>Evaluación de Presupuesto — Riesgo Crediticio MLOps</title>
   <style>
     :root {
-      --bg: #f4f7fb;
-      --card: #ffffff;
-      --line: #dbe3ef;
-      --text: #1a2a3a;
-      --muted: #54657a;
-      --primary: #1f4f82;
-      --primary-2: #2f6ba8;
-      --ok: #1e8e3e;
-      --warn: #e38b00;
-      --bad: #c53030;
+      --bg-1: #071426;
+      --bg-2: #0d223e;
+      --bg-3: #1a3f72;
+      --card: rgba(255, 255, 255, 0.9);
+      --line: #d8e6ff;
+      --text: #13243a;
+      --muted: #4d637d;
+      --primary: #1657a8;
+      --accent: #00b3ff;
+      --ok: #1f9d57;
+      --warn: #d78a07;
+      --bad: #cb3a3a;
+      --shadow: 0 12px 30px rgba(6, 24, 48, 0.16);
     }
+
     * { box-sizing: border-box; }
+    html, body { margin: 0; }
     body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, sans-serif;
-      background: var(--bg);
+      font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
       color: var(--text);
+      min-height: 100vh;
+      background: radial-gradient(circle at 10% 10%, #2f5b98 0%, transparent 22%),
+                  radial-gradient(circle at 85% 15%, #1b8fd1 0%, transparent 20%),
+                  linear-gradient(145deg, var(--bg-1), var(--bg-2) 45%, var(--bg-3));
+      background-attachment: fixed;
+      overflow-x: hidden;
     }
-    .container { max-width: 1200px; margin: 0 auto; padding: 18px; }
+
+    .bg-orb {
+      position: fixed;
+      width: 320px;
+      height: 320px;
+      border-radius: 999px;
+      filter: blur(70px);
+      opacity: 0.25;
+      z-index: 0;
+      pointer-events: none;
+      animation: floatOrb 12s ease-in-out infinite;
+    }
+    .orb-a { top: -80px; left: -70px; background: #2bb8ff; }
+    .orb-b { right: -80px; top: 30%; background: #4d78ff; animation-delay: -4s; }
+    .orb-c { bottom: -100px; left: 30%; background: #56ffd6; animation-delay: -7s; }
+    @keyframes floatOrb {
+      0%,100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(24px) translateX(-14px); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 22px;
+    }
+
+    .hero {
+      background: linear-gradient(120deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+      border: 1px solid rgba(200, 225, 255, 0.35);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      color: #edf5ff;
+      animation: rise 0.7s ease;
+    }
+    .hero h1 { margin: 0 0 6px; font-size: 1.8rem; }
+    .hero p { margin: 0; color: #dbeaff; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .hero-svg {
+      width: 100%;
+      max-width: 420px;
+      justify-self: end;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.25));
+      animation: pulse 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
     .card {
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 18px;
       margin-bottom: 16px;
-      box-shadow: 0 2px 6px rgba(20, 40, 80, 0.05);
+      box-shadow: var(--shadow);
+      animation: rise .55s ease;
     }
-    h1, h2, h3 { margin: 0 0 8px; }
-    p, li { line-height: 1.45; }
-    .muted { color: var(--muted); font-size: 0.95rem; }
+    @keyframes rise { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    h2, h3 { margin: 0 0 8px; }
+    p, li { line-height: 1.5; }
+    .muted { color: var(--muted); font-size: .94rem; }
+
     .progress {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 16px;
     }
     .step {
-      border: 1px solid var(--line);
-      background: #eef3fa;
-      color: #3a4d65;
-      border-radius: 8px;
-      padding: 8px;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: .92rem;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #d5e7ff;
+      background: #f4f9ff;
+      color: #345176;
+      transition: all .25s ease;
     }
-    .step.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-    .row { display: grid; gap: 10px; grid-template-columns: repeat(12, 1fr); align-items: end; }
+    .step.active {
+      background: linear-gradient(120deg, #2066bd, #1f90d0);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(30, 93, 168, .32);
+      transform: translateY(-1px);
+    }
+
+    .row { display: grid; gap: 12px; grid-template-columns: repeat(12,1fr); align-items: end; }
     .col-6 { grid-column: span 6; }
-    .col-4 { grid-column: span 4; }
-    .col-3 { grid-column: span 3; }
     .col-12 { grid-column: span 12; }
-    label { font-weight: 600; font-size: 0.92rem; }
+
+    label { font-weight: 600; font-size: .92rem; }
     input[type="text"], input[type="email"], input[type="number"], select, textarea {
       width: 100%;
-      border: 1px solid #bac8dc;
-      border-radius: 8px;
-      padding: 8px;
-      font-size: 0.92rem;
+      border: 1px solid #b9d0ef;
+      border-radius: 10px;
+      padding: 9px;
+      font-size: .92rem;
       background: #fff;
+      color: #153154;
+      transition: border-color .2s ease, box-shadow .2s ease;
     }
-    textarea { min-height: 64px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2a89df;
+      box-shadow: 0 0 0 3px rgba(42,137,223,.15);
+    }
+    textarea { min-height: 66px; resize: vertical; }
+
     button {
       border: 0;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-weight: 700;
       cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, filter .2s ease;
     }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-secondary { background: #e3ebf7; color: #1c3554; }
-    .btn-primary:hover { background: var(--primary-2); }
-    .actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; }
-    .hidden { display: none; }
-    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
-    table { width: 100%; border-collapse: collapse; min-width: 1400px; }
-    th, td { border-bottom: 1px solid #e7edf7; padding: 6px; font-size: 0.85rem; vertical-align: top; }
-    th { background: #f0f5fc; position: sticky; top: 0; z-index: 1; }
-    .small { font-size: 0.8rem; color: var(--muted); }
-    .tag { display: inline-block; border-radius: 12px; padding: 2px 8px; font-size: 0.8rem; color: #fff; }
+    button:hover { transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(120deg,#185eb4,#1399de); color:#fff; box-shadow: 0 7px 18px rgba(20,96,173,.3); }
+    .btn-secondary { background: #eaf3ff; color: #18406f; }
+    .actions { display:flex; justify-content:space-between; gap:8px; margin-top:16px; }
+
+    .hidden { display:none; }
+    .error { color: var(--bad); font-size: .85rem; margin-top: 4px; }
+
+    .table-wrap { overflow-x:auto; border: 1px solid var(--line); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; min-width: 1450px; }
+    th, td { padding: 7px; border-bottom: 1px solid #eaf1ff; font-size:.84rem; vertical-align: top; }
+    th { background: #edf5ff; position: sticky; top: 0; z-index: 1; }
+
+    .small { font-size: .8rem; color: var(--muted); }
+    .tag { display:inline-block; border-radius: 20px; padding: 3px 9px; color:#fff; font-size:.78rem; }
     .ok { background: var(--ok); }
     .warn { background: var(--warn); }
     .bad { background: var(--bad); }
-    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: #fbfdff; }
-    .metric strong { display: block; font-size: 1.1rem; margin-top: 4px; }
-    .status-list { margin: 0; padding-left: 18px; }
-    .q-card { border: 1px solid var(--line); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
-    .result-score { font-size: 2rem; color: var(--primary); font-weight: 700; }
-    .footer-note { margin-top: 16px; color: #4f6075; font-size: 0.9rem; }
-    .error { color: var(--bad); font-size: 0.85rem; margin-top: 4px; }
-    details { margin-top: 6px; }
-    @media (max-width: 900px) {
-      .row { grid-template-columns: repeat(1, 1fr); }
-      .col-6, .col-4, .col-3, .col-12 { grid-column: span 1; }
-      .metrics { grid-template-columns: repeat(2, 1fr); }
+
+    .metrics { display:grid; grid-template-columns: repeat(5,1fr); gap:10px; }
+    .metric {
+      border:1px solid #d7e6fd;
+      border-radius: 12px;
+      background: linear-gradient(180deg,#ffffff,#f7fbff);
+      padding:10px;
+      transition: transform .2s ease;
+    }
+    .metric:hover { transform: translateY(-2px); }
+    .metric strong { display:block; margin-top:4px; font-size:1.04rem; color:#0f4378; }
+
+    .viz-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .viz-card {
+      border: 1px solid #d8e6ff;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fcfeff;
+    }
+    .viz-card h4 { margin: 0 0 8px; font-size: .95rem; color: #1c4a79; }
+    canvas { width: 100%; height: 260px; background: #fff; border-radius: 10px; border: 1px solid #e7f0ff; }
+
+    .q-card {
+      border:1px solid #dbe8fb;
+      border-radius: 12px;
+      padding:11px;
+      margin-bottom: 10px;
+      background: linear-gradient(180deg,#ffffff,#f9fcff);
+      transition: box-shadow .2s ease;
+    }
+    .q-card:hover { box-shadow: 0 6px 16px rgba(20,70,130,.08); }
+
+    .result-score { font-size:2.3rem; color:#0d4f98; font-weight:800; }
+    .footer-note { margin-top: 16px; color:#4e6380; font-size: .9rem; }
+
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      border-radius: 999px;
+      border:1px solid #c9ddff;
+      background: #f2f8ff;
+      padding: 5px 10px;
+      font-size: .84rem;
+      color:#1c4c7f;
+      margin: 0 7px 8px 0;
+    }
+
+    @media (max-width: 1020px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-svg { justify-self: start; max-width: 320px; }
+      .metrics { grid-template-columns: repeat(2,1fr); }
+      .viz-grid { grid-template-columns: 1fr; }
       .progress { grid-template-columns: repeat(2, 1fr); }
+      .row { grid-template-columns: 1fr; }
+      .col-6, .col-12 { grid-column: span 1; }
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>Actividad Evaluativa: Diseño de Esquema Presupuestario</h1>
-  <p class="muted">Caso de maestría: Plataforma de riesgo crediticio con MLOps y cumplimiento regulatorio (Ecuador).</p>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+  <div class="bg-orb orb-c"></div>
 
-  <div class="progress" id="progressBar">
-    <div class="step active">1. Caso</div>
-    <div class="step">2. Presupuesto</div>
-    <div class="step">3. Cuestionario</div>
-    <div class="step">4. Resultados</div>
+  <div class="container">
+    <header class="hero">
+      <div class="hero-grid">
+        <div>
+          <h1>Actividad Evaluativa: Presupuestación Estratégica</h1>
+          <p>Caso avanzado para diseñar y defender un esquema presupuestario con cumplimiento financiero, técnico y regulatorio.</p>
+          <div style="margin-top:10px;">
+            <span class="pill">Riesgo crediticio</span>
+            <span class="pill">MLOps</span>
+            <span class="pill">Compliance</span>
+            <span class="pill">Evaluación automática</span>
+          </div>
+        </div>
+        <svg class="hero-svg" viewBox="0 0 520 280" xmlns="http://www.w3.org/2000/svg" aria-label="Ilustración financiera">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#6fd0ff"/>
+              <stop offset="100%" stop-color="#2474d6"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5cf1d6"/>
+              <stop offset="100%" stop-color="#2ea2cc"/>
+            </linearGradient>
+          </defs>
+          <rect x="10" y="16" width="500" height="250" rx="20" fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.4)"/>
+          <rect x="40" y="58" width="140" height="170" rx="12" fill="rgba(255,255,255,0.2)"/>
+          <rect x="200" y="58" width="280" height="80" rx="12" fill="url(#g1)" opacity=".9"/>
+          <rect x="200" y="148" width="280" height="80" rx="12" fill="url(#g2)" opacity=".88"/>
+          <circle cx="110" cy="115" r="34" fill="#7ee4ff" opacity=".9"/>
+          <path d="M90 116 L106 132 L132 102" fill="none" stroke="#0f4d8b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M240 185 C278 170,308 200,340 180 C370 162,402 193,438 174" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+          <rect x="220" y="79" width="98" height="10" rx="5" fill="rgba(255,255,255,0.8)"/>
+          <rect x="220" y="96" width="170" height="10" rx="5" fill="rgba(255,255,255,0.65)"/>
+        </svg>
+      </div>
+    </header>
+
+    <div class="progress" id="progressBar">
+      <div class="step active">1. Caso</div>
+      <div class="step">2. Presupuesto</div>
+      <div class="step">3. Cuestionario</div>
+      <div class="step">4. Resultados</div>
+    </div>
+
+    <section id="screenStart" class="card">
+      <h2>Inicio</h2>
+      <div class="row">
+        <div class="col-6">
+          <label>Nombres y Apellidos *</label>
+          <input id="studentName" type="text" placeholder="Ej.: Ana María Pérez Gómez" />
+          <div id="nameError" class="error hidden">Ingrese al menos 8 caracteres y 2 palabras.</div>
+        </div>
+        <div class="col-6">
+          <label>Correo (opcional)</label>
+          <input id="studentEmail" type="email" placeholder="correo@institucion.edu" />
+        </div>
+      </div>
+      <div class="actions"><span></span><button class="btn-primary" id="btnStart">Iniciar caso</button></div>
+    </section>
+
+    <section id="screenCase" class="card hidden">
+      <h2>Caso: Implementación de una Plataforma de Riesgo Crediticio con MLOps y Cumplimiento Regulatorio en Cooperativas (Ecuador)</h2>
+      <h3>1) Contexto</h3>
+      <p>Una red de cooperativas de ahorro y crédito busca implementar, en 12 meses, una plataforma analítica para evaluación de riesgo crediticio y monitoreo de morosidad. El fondo financiador exige transparencia, límites de overhead y sostenibilidad operativa.</p>
+      <h3>2) Objetivo del proyecto</h3>
+      <p>Diseñar un presupuesto integral CAPEX/OPEX que soporte rendimiento de modelos, gobernanza, cumplimiento, continuidad operativa y adopción organizacional.</p>
+      <h3>3) Alcance (entregables)</h3>
+      <ol>
+        <li>ETL y data mart analítico.</li><li>Modelo de scoring baseline + avanzado y validación.</li><li>MLOps mínimo viable.</li>
+        <li>Auditoría técnica (explicabilidad, sesgo, trazabilidad).</li><li>Capacitación y cumplimiento.</li><li>Manuales y continuidad.</li>
+      </ol>
+      <h3>4) Implicancias</h3>
+      <ul>
+        <li>Evitar sobreingeniería sin adopción real.</li>
+        <li>Cumplimiento y auditoría son no negociables.</li>
+        <li>OSS puede reducir licencias, pero requiere soporte/seguridad.</li>
+        <li>Subestimar calidad de datos compromete el scoring.</li>
+        <li>Sin capacitación, la solución no se usa.</li>
+      </ul>
+      <h3>5) Restricciones duras</h3>
+      <ul>
+        <li>Máximo financiable: USD 125,000 (incluye impuestos).</li>
+        <li>Overhead ≤ 12%, CAPEX ≤ 25%, Capacitación+Cambio ≥ 10%, Auditoría/Compliance ≥ 8%.</li>
+        <li>Contingencia entre 5% y 8%.</li>
+        <li>PAO1 ≥ 45% y PAO2 ≤ 55% del total.</li>
+      </ul>
+      <h3>6) Supuestos</h3>
+      <p>Horizonte 12 meses; inflación 4% anual para costos recurrentes; USD sin tipo de cambio; mínimo un rubro explícito de seguridad/soporte.</p>
+
+      <label><input type="checkbox" id="caseRead" /> He leído y comprendo el caso.</label>
+      <div class="actions"><button class="btn-secondary" id="backToStart">Atrás</button><button class="btn-primary" id="toBudget" disabled>Continuar a presupuesto</button></div>
+    </section>
+
+    <section id="screenBudget" class="card hidden">
+      <h2>Módulo 1: Construcción del presupuesto</h2>
+      <p class="small">Ajuste cantidades/costos editables para cumplir restricciones. Justifique al menos 8 rubros y asigne PAO para todos.</p>
+      <div class="table-wrap"><table id="budgetTable"><thead><tr>
+        <th>#</th><th>Categoría</th><th>Rubro</th><th>Unidad</th><th>Cantidad</th><th>Unitario</th><th>Subtotal</th><th>IVA</th><th>Total rubro</th><th>PAO</th><th>Comentario (0-200)</th>
+      </tr></thead><tbody></tbody></table></div>
+
+      <div class="metrics" id="metricsBox"></div>
+      <div class="viz-grid">
+        <div class="viz-card">
+          <h4>Distribución por categorías</h4>
+          <canvas id="catChart" width="500" height="260"></canvas>
+        </div>
+        <div class="viz-card">
+          <h4>Distribución temporal (PAO1 vs PAO2)</h4>
+          <canvas id="paoChart" width="500" height="260"></canvas>
+        </div>
+      </div>
+
+      <h3 style="margin-top:12px;">Validación de restricciones</h3>
+      <ul id="statusList"></ul>
+
+      <div class="actions"><button class="btn-secondary" id="backToCase">Atrás</button><button class="btn-primary" id="toQuiz">Continuar a cuestionario</button></div>
+    </section>
+
+    <section id="screenQuiz" class="card hidden">
+      <h2>Módulo 2: Cuestionario</h2>
+      <div id="quizContainer"></div>
+      <div class="actions"><button class="btn-secondary" id="backToBudget">Atrás</button><button class="btn-primary" id="toResults">Calificar y ver resultados</button></div>
+    </section>
+
+    <section id="screenResults" class="card hidden">
+      <h2>Resultados</h2>
+      <div class="result-score" id="finalScore">0/100</div>
+      <p id="qualitative"></p>
+      <h3>Retroalimentación</h3>
+      <ul id="feedbackList"></ul>
+      <h3>Detalle de puntajes</h3>
+      <ul id="scoreBreakdown"></ul>
+      <div class="actions">
+        <button class="btn-secondary" id="backToQuiz">Atrás</button>
+        <button class="btn-primary" id="btnPdf">Descargar PDF</button>
+      </div>
+      <p id="pdfWarning" class="error hidden">No se pudo cargar el módulo PDF; copie/pegue resultados.</p>
+      <p class="footer-note">Generado automáticamente — evaluación formativa de presupuestación (nivel maestría).</p>
+    </section>
   </div>
 
-  <section id="screenStart" class="card">
-    <h2>Inicio</h2>
-    <div class="row">
-      <div class="col-6">
-        <label>Nombres y Apellidos *</label>
-        <input id="studentName" type="text" placeholder="Ej.: Ana María Pérez Gómez" />
-        <div id="nameError" class="error hidden">Ingrese al menos 8 caracteres y 2 palabras.</div>
-      </div>
-      <div class="col-6">
-        <label>Correo (opcional)</label>
-        <input id="studentEmail" type="email" placeholder="correo@institucion.edu" />
-      </div>
-    </div>
-    <div class="actions"><span></span><button class="btn-primary" id="btnStart">Iniciar caso</button></div>
-  </section>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script>
+  (() => {
+    const IVA_RATE = 0.12;
+    const INFLATION = 0.04;
+    const state = { student: { name:"", email:"", id:"", startedAt:null }, rows: [], computed: {}, quizAnswers: {} };
 
-  <section id="screenCase" class="card hidden">
-    <h2>Caso: Implementación de una Plataforma de Riesgo Crediticio con MLOps y Cumplimiento Regulatorio en Cooperativas (Ecuador)</h2>
-    <h3>1) Contexto</h3>
-    <p>Una red de cooperativas de ahorro y crédito busca implementar, en 12 meses, una plataforma analítica para evaluación de riesgo crediticio y monitoreo de morosidad. El fondo financiador exige transparencia, límites de overhead y sostenibilidad operativa.</p>
-    <h3>2) Objetivo del proyecto</h3>
-    <p>Diseñar un presupuesto integral CAPEX/OPEX que soporte rendimiento de modelos, gobernanza, cumplimiento, continuidad operativa y adopción organizacional.</p>
-    <h3>3) Alcance (entregables)</h3>
-    <ol>
-      <li>ETL y data mart analítico.</li><li>Modelo de scoring baseline + avanzado y validación.</li><li>MLOps mínimo viable.</li>
-      <li>Auditoría técnica (explicabilidad, sesgo, trazabilidad).</li><li>Capacitación y cumplimiento.</li><li>Manuales y continuidad.</li>
-    </ol>
-    <h3>4) Implicancias</h3>
-    <ul>
-      <li>Evitar sobreingeniería sin adopción real.</li>
-      <li>Cumplimiento y auditoría son no negociables.</li>
-      <li>OSS puede reducir licencias, pero requiere soporte/seguridad.</li>
-      <li>Subestimar calidad de datos compromete el scoring.</li>
-      <li>Sin capacitación, la solución no se usa.</li>
-    </ul>
-    <h3>5) Restricciones duras</h3>
-    <ul>
-      <li>Máximo financiable: USD 125,000 (incluye impuestos).</li>
-      <li>Overhead ≤ 12%, CAPEX ≤ 25%, Capacitación+Cambio ≥ 10%, Auditoría/Compliance ≥ 8%.</li>
-      <li>Contingencia entre 5% y 8%.</li>
-      <li>PAO1 ≥ 45% y PAO2 ≤ 55% del total.</li>
-    </ul>
-    <h3>6) Supuestos</h3>
-    <p>Horizonte 12 meses; inflación 4% anual para costos recurrentes; USD sin tipo de cambio; mínimo un rubro explícito de seguridad/soporte.</p>
-
-    <label><input type="checkbox" id="caseRead" /> He leído y comprendo el caso.</label>
-    <div class="actions"><button class="btn-secondary" id="backToStart">Atrás</button><button class="btn-primary" id="toBudget" disabled>Continuar a presupuesto</button></div>
-  </section>
-
-  <section id="screenBudget" class="card hidden">
-    <h2>Módulo 1: Construcción del presupuesto</h2>
-    <p class="small">Ajuste cantidades/costos editables para cumplir restricciones. Justifique al menos 8 rubros y asigne PAO para todos.</p>
-    <div class="table-wrap"><table id="budgetTable"><thead><tr>
-      <th>#</th><th>Categoría</th><th>Rubro</th><th>Unidad</th><th>Cantidad</th><th>Unitario</th><th>Subtotal</th><th>IVA</th><th>Total rubro</th><th>PAO</th><th>Comentario (0-200)</th>
-    </tr></thead><tbody></tbody></table></div>
-
-    <div class="metrics" id="metricsBox"></div>
-    <h3>Validación de restricciones</h3>
-    <ul class="status-list" id="statusList"></ul>
-
-    <div class="actions"><button class="btn-secondary" id="backToCase">Atrás</button><button class="btn-primary" id="toQuiz">Continuar a cuestionario</button></div>
-  </section>
-
-  <section id="screenQuiz" class="card hidden">
-    <h2>Módulo 2: Cuestionario</h2>
-    <div id="quizContainer"></div>
-    <div class="actions"><button class="btn-secondary" id="backToBudget">Atrás</button><button class="btn-primary" id="toResults">Calificar y ver resultados</button></div>
-  </section>
-
-  <section id="screenResults" class="card hidden">
-    <h2>Resultados</h2>
-    <div class="result-score" id="finalScore">0/100</div>
-    <p id="qualitative"></p>
-    <h3>Retroalimentación</h3>
-    <ul id="feedbackList"></ul>
-    <h3>Detalle de puntajes</h3>
-    <ul id="scoreBreakdown"></ul>
-    <div class="actions">
-      <button class="btn-secondary" id="backToQuiz">Atrás</button>
-      <button class="btn-primary" id="btnPdf">Descargar PDF</button>
-    </div>
-    <p id="pdfWarning" class="error hidden">No se pudo cargar el módulo PDF; copie/pegue resultados.</p>
-    <p class="footer-note">Generado automáticamente — evaluación formativa de presupuestación (nivel maestría).</p>
-  </section>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script>
-(() => {
-  const IVA_RATE = 0.12;
-  const INFLATION = 0.04;
-  const state = {
-    student: { name: "", email: "", id: "", startedAt: null },
-    rows: [],
-    computed: {},
-    quizAnswers: {}
-  };
-
-  const rowsDef = [
-    {id:1, cat:"Personal interno", item:"Líder de datos (PM/DS)", unit:"mes", qty:8, qtyMin:6, qtyMax:10, qtyE:true, unitCost:1600, unitMin:1600, unitMax:1600, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:2, cat:"Personal interno", item:"Ingeniero de datos", unit:"mes", qty:6, qtyMin:4, qtyMax:8, qtyE:true, unitCost:1400, unitMin:1400, unitMax:1400, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:3, cat:"Personal interno", item:"Analista de riesgo", unit:"mes", qty:4, qtyMin:3, qtyMax:6, qtyE:true, unitCost:1200, unitMin:1200, unitMax:1200, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:4, cat:"Servicios externos", item:"Consultoría MLOps/Seguridad", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:10000, unitMin:8000, unitMax:14000, unitE:true, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:5, cat:"Servicios externos", item:"Validación externa del modelo (auditoría)", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:6500, unitMin:6500, unitMax:6500, unitE:false, iva:true, capex:false, train:false, audit:true, overhead:false, contingency:false, pao:"PAO2"},
-    {id:6, cat:"Servicios externos", item:"Taller legal/compliance", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:3200, unitMin:3200, unitMax:3200, unitE:false, iva:true, capex:false, train:false, audit:true, overhead:false, contingency:false, pao:"PAO2"},
-    {id:7, cat:"Infraestructura y herramientas", item:"Servidor on-prem (CAPEX)", unit:"unidad", qty:1, qtyMin:0, qtyMax:2, qtyE:true, unitCost:9500, unitMin:9500, unitMax:9500, unitE:false, iva:true, capex:true, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:8, cat:"Infraestructura y herramientas", item:"Laptops técnicas (CAPEX)", unit:"unidad", qty:2, qtyMin:0, qtyMax:4, qtyE:true, unitCost:1250, unitMin:1250, unitMax:1250, unitE:false, iva:true, capex:true, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:9, cat:"Infraestructura y herramientas", item:"Nube / cómputo", unit:"mes", qty:8, qtyMin:6, qtyMax:12, qtyE:true, unitCost:550, unitMin:350, unitMax:900, unitE:true, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:10, cat:"Datos y calidad", item:"Integración/limpieza de datos", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:6000, unitMin:4000, unitMax:9000, unitE:true, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:11, cat:"Datos y calidad", item:"Backups + continuidad", unit:"mes", qty:10, qtyMin:6, qtyMax:12, qtyE:true, unitCost:180, unitMin:180, unitMax:180, unitE:false, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO2"},
-    {id:12, cat:"Capacitación y cambio", item:"Capacitación analistas", unit:"sesión", qty:6, qtyMin:4, qtyMax:10, qtyE:true, unitCost:420, unitMin:420, unitMax:420, unitE:false, iva:true, capex:false, train:true, audit:false, overhead:false, contingency:false, pao:"PAO2"},
-    {id:13, cat:"Capacitación y cambio", item:"Gestión del cambio", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:5000, unitMin:3500, unitMax:7500, unitE:true, iva:true, capex:false, train:true, audit:false, overhead:false, contingency:false, pao:"PAO2"},
-    {id:14, cat:"Viajes y levantamiento", item:"Visitas técnicas a CAC", unit:"viaje", qty:6, qtyMin:4, qtyMax:12, qtyE:true, unitCost:260, unitMin:260, unitMax:260, unitE:false, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
-    {id:15, cat:"Overhead administrativo", item:"Administración del proyecto", unit:"% subtotal sin IVA", qty:9, qtyMin:6, qtyMax:12, qtyE:true, unitCost:0, unitMin:0, unitMax:0, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:true, contingency:false, pao:"PAO1"},
-    {id:16, cat:"Contingencia", item:"Contingencia", unit:"% subtotal sin IVA", qty:6, qtyMin:5, qtyMax:8, qtyE:true, unitCost:0, unitMin:0, unitMax:0, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:true, pao:"PAO2"}
-  ];
-
-  state.rows = rowsDef.map(r => ({...r, comment:""}));
-
-  const screens = {
-    start: byId("screenStart"), case: byId("screenCase"), budget: byId("screenBudget"), quiz: byId("screenQuiz"), results: byId("screenResults")
-  };
-
-  const questionDefs = [
-    {id:"p1", type:"num", text:"P1. Total del presupuesto con IVA (USD, 2 decimales).", hint:"Incluye subtotal sin IVA + IVA + overhead + contingencia."},
-    {id:"p2", type:"num", text:"P2. % Overhead sobre el total final (2 decimales).", hint:"Use el rubro de overhead y divídalo para total final."},
-    {id:"p3", type:"num", text:"P3. % Capacitación+Gestión del cambio sobre total final (2 decimales).", hint:"Considere rubros 12 y 13 con IVA."},
-    {id:"p4", type:"num", text:"P4. % CAPEX (servidor+laptops) sobre total final (2 decimales).", hint:"Considere rubros 7 y 8 con IVA."},
-    {id:"p5", type:"mcq", text:"P5. Hallazgo de sesgo: rubro más responsable de mitigarlo sin frenar operación.", options:["A) Nube / cómputo","B) Validación externa del modelo","C) Servidor on-prem","D) Viajes técnicos"], answer:"B", hint:"Piense en auditoría independiente y control de sesgo."},
-    {id:"p6", type:"mcq", text:"P6. Decisión que reduce mejor sobreingeniería manteniendo cumplimiento.", options:["A) Eliminar auditoría externa","B) Reducir capacitación al mínimo","C) Priorizar calidad de datos y cambio organizacional antes de duplicar infraestructura","D) Maximizar CAPEX para robustez"], answer:"C", hint:"Se busca equilibrio entre adopción, datos y control."},
-    {id:"p7", type:"mcq", text:"P7. Con presupuesto limitado, combinación que mejor sostiene continuidad operativa.", options:["A) Laptops + viajes","B) Backups/continuidad + nube razonable","C) Servidor extra + más visitas","D) Reducir MLOps y subir CAPEX"], answer:"B", hint:"Continuidad depende de respaldo y operación."},
-    {id:"p8", type:"mcq", text:"P8. Riesgo principal de subfinanciar Integración/Limpieza de datos.", options:["A) Mayor IVA","B) Drift de mercado","C) Errores sistémicos y baja validez del scoring","D) Más overhead"], answer:"C", hint:"Sin calidad de datos, el modelo aprende mal."},
-    {id:"p9", type:"open", text:"P9. (80–120 palabras) Justifique PAO1/PAO2 por dependencia ETL→modelo→MLOps→adopción y riesgo.", hint:"Mencione secuencia técnica y al menos un riesgo."},
-    {id:"p10", type:"open", text:"P10. (60–100 palabras) Dos riesgos residuales y cómo los mitiga (o limitación).", hint:"Debe incluir 2 riesgos y 2 mitigaciones/limitaciones."}
-  ];
-
-  function byId(id){ return document.getElementById(id); }
-  function fmt(n){ return Number(n || 0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
-  function updateProgress(idx){ [...byId("progressBar").children].forEach((el, i) => el.classList.toggle("active", i===idx)); }
-  function showScreen(key){ Object.values(screens).forEach(s => s.classList.add("hidden")); screens[key].classList.remove("hidden"); }
-
-  function renderTable(){
-    const tb = byId("budgetTable").querySelector("tbody");
-    tb.innerHTML = "";
-    state.rows.forEach(r => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${r.id}</td>
-        <td>${r.cat}</td>
-        <td>${r.item}</td>
-        <td>${r.unit}</td>
-        <td>${r.overhead||r.contingency ? `<input type="number" min="${r.qtyMin}" max="${r.qtyMax}" step="0.01" value="${r.qty}" data-k="qty" data-id="${r.id}">` :
-          r.qtyE ? `<input type="number" min="${r.qtyMin}" max="${r.qtyMax}" step="1" value="${r.qty}" data-k="qty" data-id="${r.id}">` : r.qty}</td>
-        <td>${r.unitE ? `<input type="number" min="${r.unitMin}" max="${r.unitMax}" step="10" value="${r.unitCost}" data-k="unit" data-id="${r.id}">` : fmt(r.unitCost)}</td>
-        <td id="sub-${r.id}">0.00</td>
-        <td id="iva-${r.id}">0.00</td>
-        <td id="tot-${r.id}">0.00</td>
-        <td><select data-k="pao" data-id="${r.id}"><option ${r.pao==="PAO1"?"selected":""}>PAO1</option><option ${r.pao==="PAO2"?"selected":""}>PAO2</option></select></td>
-        <td><textarea maxlength="200" data-k="comment" data-id="${r.id}" placeholder="Justificación técnica/financiera">${r.comment||""}</textarea><div class="small">${(r.comment||"").length}/200</div></td>
-      `;
-      tb.appendChild(tr);
-    });
-
-    tb.querySelectorAll("input,select,textarea").forEach(el => {
-      el.addEventListener("input", ev => {
-        const id = Number(ev.target.dataset.id);
-        const key = ev.target.dataset.k;
-        const row = state.rows.find(x => x.id === id);
-        if (key === "qty") {
-          row.qty = clamp(Number(ev.target.value), row.qtyMin, row.qtyMax);
-          ev.target.value = row.qty;
-        }
-        if (key === "unit") {
-          row.unitCost = clamp(Number(ev.target.value), row.unitMin, row.unitMax);
-          ev.target.value = row.unitCost;
-        }
-        if (key === "pao") row.pao = ev.target.value;
-        if (key === "comment") {
-          row.comment = ev.target.value.slice(0,200);
-          ev.target.nextElementSibling.textContent = `${row.comment.length}/200`;
-        }
-        recalc();
-      });
-    });
-  }
-
-  function clamp(v, mn, mx){ if (isNaN(v)) return mn; return Math.max(mn, Math.min(mx, v)); }
-
-  function recalc(){
-    const baseRows = state.rows.filter(r => !r.overhead && !r.contingency);
-    let subtotalNoIVA = 0, taxableBase = 0;
-    const cats = {};
-
-    baseRows.forEach(r => {
-      let subtotal = r.qty * (r.unitCost || 0);
-      if (r.item === "Nube / cómputo" || r.item === "Backups + continuidad") subtotal *= (1 + INFLATION * (r.qty/12));
-      const iva = r.iva ? subtotal * IVA_RATE : 0;
-      const total = subtotal + iva;
-      r.subtotal = subtotal; r.ivaVal = iva; r.total = total;
-      subtotalNoIVA += subtotal;
-      taxableBase += r.iva ? subtotal : 0;
-      cats[r.cat] = (cats[r.cat] || 0) + total;
-    });
-
-    const overheadRow = state.rows.find(r => r.overhead);
-    overheadRow.subtotal = subtotalNoIVA * overheadRow.qty / 100;
-    overheadRow.ivaVal = 0; overheadRow.total = overheadRow.subtotal;
-    cats[overheadRow.cat] = overheadRow.total;
-
-    const contingencyRow = state.rows.find(r => r.contingency);
-    contingencyRow.subtotal = subtotalNoIVA * contingencyRow.qty / 100;
-    contingencyRow.ivaVal = 0; contingencyRow.total = contingencyRow.subtotal;
-    cats[contingencyRow.cat] = contingencyRow.total;
-
-    const totalIVA = taxableBase * IVA_RATE;
-    const totalFinal = subtotalNoIVA + totalIVA + overheadRow.total + contingencyRow.total;
-    const capex = state.rows.filter(r => r.capex).reduce((a,b)=>a+b.total,0);
-    const training = state.rows.filter(r => r.train).reduce((a,b)=>a+b.total,0);
-    const audit = state.rows.filter(r => r.audit).reduce((a,b)=>a+b.total,0);
-    const pao1 = state.rows.filter(r => r.pao === "PAO1").reduce((a,b)=>a+(b.total||0),0);
-    const pao2 = state.rows.filter(r => r.pao === "PAO2").reduce((a,b)=>a+(b.total||0),0);
-    const pct = (x) => totalFinal ? (x*100/totalFinal) : 0;
-
-    state.computed = {
-      subtotalNoIVA, totalIVA, totalFinal, capex, training, audit,
-      overhead: overheadRow.total, contingency: contingencyRow.total,
-      overheadPct: pct(overheadRow.total), capexPct: pct(capex), trainingPct: pct(training), auditPct: pct(audit), contPct: pct(contingencyRow.total),
-      pao1, pao2, pao1Pct: pct(pao1), pao2Pct: pct(pao2),
-      cats
-    };
-
-    state.rows.forEach(r => {
-      byId(`sub-${r.id}`).textContent = fmt(r.subtotal||0);
-      byId(`iva-${r.id}`).textContent = fmt(r.ivaVal||0);
-      byId(`tot-${r.id}`).textContent = fmt(r.total||0);
-    });
-
-    renderMetrics();
-    renderValidation();
-  }
-
-  function statusLine(ok, txt){
-    const tag = ok ? '<span class="tag ok">Cumple</span>' : '<span class="tag bad">No cumple</span>';
-    return `<li>${tag} ${txt}</li>`;
-  }
-
-  function renderMetrics(){
-    const c = state.computed;
-    byId("metricsBox").innerHTML = `
-      <div class="metric"><div>Total final</div><strong>USD ${fmt(c.totalFinal)}</strong></div>
-      <div class="metric"><div>Subtotal sin IVA</div><strong>USD ${fmt(c.subtotalNoIVA)}</strong></div>
-      <div class="metric"><div>IVA total</div><strong>USD ${fmt(c.totalIVA)}</strong></div>
-      <div class="metric"><div>Overhead</div><strong>${fmt(c.overheadPct)}%</strong></div>
-      <div class="metric"><div>CAPEX</div><strong>${fmt(c.capexPct)}%</strong></div>
-      <div class="metric"><div>Capacitación + cambio</div><strong>${fmt(c.trainingPct)}%</strong></div>
-      <div class="metric"><div>Auditoría/compliance</div><strong>${fmt(c.auditPct)}%</strong></div>
-      <div class="metric"><div>Contingencia</div><strong>${fmt(c.contPct)}%</strong></div>
-      <div class="metric"><div>PAO1</div><strong>${fmt(c.pao1Pct)}%</strong></div>
-      <div class="metric"><div>PAO2</div><strong>${fmt(c.pao2Pct)}%</strong></div>
-    `;
-  }
-
-  function renderValidation(){
-    const c = state.computed;
-    const validations = [
-      [c.totalFinal<=125000, `Techo USD 125,000. Actual: USD ${fmt(c.totalFinal)}`],
-      [c.overheadPct<=12, `Overhead ≤ 12%. Actual: ${fmt(c.overheadPct)}%`],
-      [c.capexPct<=25, `CAPEX ≤ 25%. Actual: ${fmt(c.capexPct)}%`],
-      [c.trainingPct>=10, `Capacitación + cambio ≥ 10%. Actual: ${fmt(c.trainingPct)}%`],
-      [c.auditPct>=8, `Auditoría/compliance ≥ 8%. Actual: ${fmt(c.auditPct)}%`],
-      [c.contPct>=5 && c.contPct<=8, `Contingencia 5% a 8%. Actual: ${fmt(c.contPct)}%`],
-      [c.pao1Pct>=45, `PAO1 ≥ 45%. Actual: ${fmt(c.pao1Pct)}%`],
-      [c.pao2Pct<=55, `PAO2 ≤ 55%. Actual: ${fmt(c.pao2Pct)}%`],
-      [state.rows.filter(r => r.comment.trim().length>0).length>=8, `Justificación en al menos 8 rubros. Actual: ${state.rows.filter(r => r.comment.trim().length>0).length}`],
-      [state.rows.some(r => r.item.toLowerCase().includes("seguridad")), `Existe rubro de seguridad/soporte operativo.`]
+    const rowsDef = [
+      {id:1, cat:"Personal interno", item:"Líder de datos (PM/DS)", unit:"mes", qty:8, qtyMin:6, qtyMax:10, qtyE:true, unitCost:1600, unitMin:1600, unitMax:1600, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:2, cat:"Personal interno", item:"Ingeniero de datos", unit:"mes", qty:6, qtyMin:4, qtyMax:8, qtyE:true, unitCost:1400, unitMin:1400, unitMax:1400, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:3, cat:"Personal interno", item:"Analista de riesgo", unit:"mes", qty:4, qtyMin:3, qtyMax:6, qtyE:true, unitCost:1200, unitMin:1200, unitMax:1200, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:4, cat:"Servicios externos", item:"Consultoría MLOps/Seguridad", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:10000, unitMin:8000, unitMax:14000, unitE:true, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:5, cat:"Servicios externos", item:"Validación externa del modelo (auditoría)", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:6500, unitMin:6500, unitMax:6500, unitE:false, iva:true, capex:false, train:false, audit:true, overhead:false, contingency:false, pao:"PAO2"},
+      {id:6, cat:"Servicios externos", item:"Taller legal/compliance", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:3200, unitMin:3200, unitMax:3200, unitE:false, iva:true, capex:false, train:false, audit:true, overhead:false, contingency:false, pao:"PAO2"},
+      {id:7, cat:"Infraestructura y herramientas", item:"Servidor on-prem (CAPEX)", unit:"unidad", qty:1, qtyMin:0, qtyMax:2, qtyE:true, unitCost:9500, unitMin:9500, unitMax:9500, unitE:false, iva:true, capex:true, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:8, cat:"Infraestructura y herramientas", item:"Laptops técnicas (CAPEX)", unit:"unidad", qty:2, qtyMin:0, qtyMax:4, qtyE:true, unitCost:1250, unitMin:1250, unitMax:1250, unitE:false, iva:true, capex:true, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:9, cat:"Infraestructura y herramientas", item:"Nube / cómputo", unit:"mes", qty:8, qtyMin:6, qtyMax:12, qtyE:true, unitCost:550, unitMin:350, unitMax:900, unitE:true, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:10, cat:"Datos y calidad", item:"Integración/limpieza de datos", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:6000, unitMin:4000, unitMax:9000, unitE:true, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:11, cat:"Datos y calidad", item:"Backups + continuidad", unit:"mes", qty:10, qtyMin:6, qtyMax:12, qtyE:true, unitCost:180, unitMin:180, unitMax:180, unitE:false, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO2"},
+      {id:12, cat:"Capacitación y cambio", item:"Capacitación analistas", unit:"sesión", qty:6, qtyMin:4, qtyMax:10, qtyE:true, unitCost:420, unitMin:420, unitMax:420, unitE:false, iva:true, capex:false, train:true, audit:false, overhead:false, contingency:false, pao:"PAO2"},
+      {id:13, cat:"Capacitación y cambio", item:"Gestión del cambio", unit:"paquete", qty:1, qtyMin:1, qtyMax:1, qtyE:false, unitCost:5000, unitMin:3500, unitMax:7500, unitE:true, iva:true, capex:false, train:true, audit:false, overhead:false, contingency:false, pao:"PAO2"},
+      {id:14, cat:"Viajes y levantamiento", item:"Visitas técnicas a CAC", unit:"viaje", qty:6, qtyMin:4, qtyMax:12, qtyE:true, unitCost:260, unitMin:260, unitMax:260, unitE:false, iva:true, capex:false, train:false, audit:false, overhead:false, contingency:false, pao:"PAO1"},
+      {id:15, cat:"Overhead administrativo", item:"Administración del proyecto", unit:"% subtotal sin IVA", qty:9, qtyMin:6, qtyMax:12, qtyE:true, unitCost:0, unitMin:0, unitMax:0, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:true, contingency:false, pao:"PAO1"},
+      {id:16, cat:"Contingencia", item:"Contingencia", unit:"% subtotal sin IVA", qty:6, qtyMin:5, qtyMax:8, qtyE:true, unitCost:0, unitMin:0, unitMax:0, unitE:false, iva:false, capex:false, train:false, audit:false, overhead:false, contingency:true, pao:"PAO2"}
     ];
-    byId("statusList").innerHTML = validations.map(v => statusLine(v[0], v[1])).join("");
-  }
 
-  function renderQuiz(){
-    const qWrap = byId("quizContainer");
-    qWrap.innerHTML = "";
-    questionDefs.forEach(q => {
-      const div = document.createElement("div");
-      div.className = "q-card";
-      let body = `<label>${q.text}</label>`;
-      if (q.type === "num") body += `<input type="number" step="0.01" data-q="${q.id}">`;
-      if (q.type === "mcq") body += q.options.map(opt => `<label style="display:block;font-weight:400;"><input type="radio" name="${q.id}" value="${opt[0]}" data-q="${q.id}"> ${opt}</label>`).join("");
-      if (q.type === "open") body += `<textarea data-q="${q.id}" placeholder="Respuesta"></textarea>`;
-      body += `<details><summary>Pista</summary><p class="small">${q.hint}</p></details>`;
-      div.innerHTML = body;
-      qWrap.appendChild(div);
-    });
-    qWrap.querySelectorAll("input,textarea").forEach(el => {
-      el.addEventListener("input", e => {
-        const q = e.target.dataset.q;
-        if (e.target.type === "radio") {
-          const selected = qWrap.querySelector(`input[name="${q}"]:checked`);
-          state.quizAnswers[q] = selected ? selected.value : "";
-        } else {
-          state.quizAnswers[q] = e.target.value;
-        }
+    const questionDefs = [
+      {id:"p1", type:"num", text:"P1. Total del presupuesto con IVA (USD, 2 decimales).", hint:"Incluye subtotal sin IVA + IVA + overhead + contingencia."},
+      {id:"p2", type:"num", text:"P2. % Overhead sobre el total final (2 decimales).", hint:"Use el rubro de overhead y divídalo para total final."},
+      {id:"p3", type:"num", text:"P3. % Capacitación+Gestión del cambio sobre total final (2 decimales).", hint:"Considere rubros 12 y 13 con IVA."},
+      {id:"p4", type:"num", text:"P4. % CAPEX (servidor+laptops) sobre total final (2 decimales).", hint:"Considere rubros 7 y 8 con IVA."},
+      {id:"p5", type:"mcq", text:"P5. Hallazgo de sesgo: rubro más responsable de mitigarlo sin frenar operación.", options:["A) Nube / cómputo","B) Validación externa del modelo","C) Servidor on-prem","D) Viajes técnicos"], answer:"B", hint:"Piense en auditoría independiente y control de sesgo."},
+      {id:"p6", type:"mcq", text:"P6. Decisión que reduce mejor sobreingeniería manteniendo cumplimiento.", options:["A) Eliminar auditoría externa","B) Reducir capacitación al mínimo","C) Priorizar calidad de datos y cambio organizacional antes de duplicar infraestructura","D) Maximizar CAPEX para robustez"], answer:"C", hint:"Se busca equilibrio entre adopción, datos y control."},
+      {id:"p7", type:"mcq", text:"P7. Con presupuesto limitado, combinación que mejor sostiene continuidad operativa.", options:["A) Laptops + viajes","B) Backups/continuidad + nube razonable","C) Servidor extra + más visitas","D) Reducir MLOps y subir CAPEX"], answer:"B", hint:"Continuidad depende de respaldo y operación."},
+      {id:"p8", type:"mcq", text:"P8. Riesgo principal de subfinanciar Integración/Limpieza de datos.", options:["A) Mayor IVA","B) Drift de mercado","C) Errores sistémicos y baja validez del scoring","D) Más overhead"], answer:"C", hint:"Sin calidad de datos, el modelo aprende mal."},
+      {id:"p9", type:"open", text:"P9. (80–120 palabras) Justifique PAO1/PAO2 por dependencia ETL→modelo→MLOps→adopción y riesgo.", hint:"Mencione secuencia técnica y al menos un riesgo."},
+      {id:"p10", type:"open", text:"P10. (60–100 palabras) Dos riesgos residuales y cómo los mitiga (o limitación).", hint:"Debe incluir 2 riesgos y 2 mitigaciones/limitaciones."}
+    ];
+
+    state.rows = rowsDef.map(r => ({...r, comment:""}));
+
+    const screens = {
+      start: byId("screenStart"), case: byId("screenCase"), budget: byId("screenBudget"), quiz: byId("screenQuiz"), results: byId("screenResults")
+    };
+
+    function byId(id){ return document.getElementById(id); }
+    function fmt(n){ return Number(n || 0).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2}); }
+    function updateProgress(idx){ [...byId("progressBar").children].forEach((el,i) => el.classList.toggle("active", i===idx)); }
+    function showScreen(key){ Object.values(screens).forEach(s => s.classList.add("hidden")); screens[key].classList.remove("hidden"); }
+    function clamp(v,mn,mx){ if (isNaN(v)) return mn; return Math.max(mn, Math.min(mx, v)); }
+
+    function renderTable(){
+      const tb = byId("budgetTable").querySelector("tbody");
+      tb.innerHTML = "";
+      state.rows.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td>${r.cat}</td>
+          <td>${r.item}</td>
+          <td>${r.unit}</td>
+          <td>${r.overhead||r.contingency ? `<input type="number" min="${r.qtyMin}" max="${r.qtyMax}" step="0.01" value="${r.qty}" data-k="qty" data-id="${r.id}">` : (r.qtyE ? `<input type="number" min="${r.qtyMin}" max="${r.qtyMax}" step="1" value="${r.qty}" data-k="qty" data-id="${r.id}">` : r.qty)}</td>
+          <td>${r.unitE ? `<input type="number" min="${r.unitMin}" max="${r.unitMax}" step="10" value="${r.unitCost}" data-k="unit" data-id="${r.id}">` : fmt(r.unitCost)}</td>
+          <td id="sub-${r.id}">0.00</td>
+          <td id="iva-${r.id}">0.00</td>
+          <td id="tot-${r.id}">0.00</td>
+          <td><select data-k="pao" data-id="${r.id}"><option ${r.pao==="PAO1"?"selected":""}>PAO1</option><option ${r.pao==="PAO2"?"selected":""}>PAO2</option></select></td>
+          <td><textarea maxlength="200" data-k="comment" data-id="${r.id}" placeholder="Justificación técnica/financiera">${r.comment||""}</textarea><div class="small">${(r.comment||"").length}/200</div></td>
+        `;
+        tb.appendChild(tr);
       });
+
+      tb.querySelectorAll("input,select,textarea").forEach(el => {
+        el.addEventListener("input", ev => {
+          const id = Number(ev.target.dataset.id);
+          const key = ev.target.dataset.k;
+          const row = state.rows.find(x => x.id===id);
+          if (key === "qty") { row.qty = clamp(Number(ev.target.value), row.qtyMin, row.qtyMax); ev.target.value = row.qty; }
+          if (key === "unit") { row.unitCost = clamp(Number(ev.target.value), row.unitMin, row.unitMax); ev.target.value = row.unitCost; }
+          if (key === "pao") row.pao = ev.target.value;
+          if (key === "comment") {
+            row.comment = ev.target.value.slice(0,200);
+            ev.target.nextElementSibling.textContent = `${row.comment.length}/200`;
+          }
+          recalc();
+        });
+      });
+    }
+
+    function recalc(){
+      const baseRows = state.rows.filter(r => !r.overhead && !r.contingency);
+      let subtotalNoIVA = 0, taxableBase = 0;
+      const cats = {};
+
+      baseRows.forEach(r => {
+        let subtotal = r.qty * (r.unitCost || 0);
+        if (r.item === "Nube / cómputo" || r.item === "Backups + continuidad") subtotal *= (1 + INFLATION * (r.qty/12));
+        const iva = r.iva ? subtotal * IVA_RATE : 0;
+        const total = subtotal + iva;
+        r.subtotal = subtotal; r.ivaVal = iva; r.total = total;
+        subtotalNoIVA += subtotal;
+        taxableBase += r.iva ? subtotal : 0;
+        cats[r.cat] = (cats[r.cat] || 0) + total;
+      });
+
+      const overheadRow = state.rows.find(r => r.overhead);
+      overheadRow.subtotal = subtotalNoIVA * overheadRow.qty / 100;
+      overheadRow.ivaVal = 0; overheadRow.total = overheadRow.subtotal;
+      cats[overheadRow.cat] = overheadRow.total;
+
+      const contingencyRow = state.rows.find(r => r.contingency);
+      contingencyRow.subtotal = subtotalNoIVA * contingencyRow.qty / 100;
+      contingencyRow.ivaVal = 0; contingencyRow.total = contingencyRow.subtotal;
+      cats[contingencyRow.cat] = contingencyRow.total;
+
+      const totalIVA = taxableBase * IVA_RATE;
+      const totalFinal = subtotalNoIVA + totalIVA + overheadRow.total + contingencyRow.total;
+      const capex = state.rows.filter(r => r.capex).reduce((a,b)=>a+b.total,0);
+      const training = state.rows.filter(r => r.train).reduce((a,b)=>a+b.total,0);
+      const audit = state.rows.filter(r => r.audit).reduce((a,b)=>a+b.total,0);
+      const pao1 = state.rows.filter(r => r.pao === "PAO1").reduce((a,b)=>a+(b.total||0),0);
+      const pao2 = state.rows.filter(r => r.pao === "PAO2").reduce((a,b)=>a+(b.total||0),0);
+      const pct = x => totalFinal ? (x*100/totalFinal) : 0;
+
+      state.computed = {
+        subtotalNoIVA, totalIVA, totalFinal, capex, training, audit,
+        overhead: overheadRow.total, contingency: contingencyRow.total,
+        overheadPct: pct(overheadRow.total), capexPct: pct(capex), trainingPct: pct(training), auditPct: pct(audit), contPct: pct(contingencyRow.total),
+        pao1, pao2, pao1Pct: pct(pao1), pao2Pct: pct(pao2), cats
+      };
+
+      state.rows.forEach(r => {
+        byId(`sub-${r.id}`).textContent = fmt(r.subtotal||0);
+        byId(`iva-${r.id}`).textContent = fmt(r.ivaVal||0);
+        byId(`tot-${r.id}`).textContent = fmt(r.total||0);
+      });
+
+      renderMetrics();
+      renderValidation();
+      drawCharts();
+    }
+
+    function renderMetrics(){
+      const c = state.computed;
+      byId("metricsBox").innerHTML = `
+        <div class="metric"><div>Total final</div><strong>USD ${fmt(c.totalFinal)}</strong></div>
+        <div class="metric"><div>Subtotal sin IVA</div><strong>USD ${fmt(c.subtotalNoIVA)}</strong></div>
+        <div class="metric"><div>IVA total</div><strong>USD ${fmt(c.totalIVA)}</strong></div>
+        <div class="metric"><div>Overhead</div><strong>${fmt(c.overheadPct)}%</strong></div>
+        <div class="metric"><div>CAPEX</div><strong>${fmt(c.capexPct)}%</strong></div>
+        <div class="metric"><div>Capacitación + cambio</div><strong>${fmt(c.trainingPct)}%</strong></div>
+        <div class="metric"><div>Auditoría/compliance</div><strong>${fmt(c.auditPct)}%</strong></div>
+        <div class="metric"><div>Contingencia</div><strong>${fmt(c.contPct)}%</strong></div>
+        <div class="metric"><div>PAO1</div><strong>${fmt(c.pao1Pct)}%</strong></div>
+        <div class="metric"><div>PAO2</div><strong>${fmt(c.pao2Pct)}%</strong></div>
+      `;
+    }
+
+    function statusLine(ok, txt){ return `<li><span class="tag ${ok?'ok':'bad'}">${ok?'Cumple':'No cumple'}</span> ${txt}</li>`; }
+
+    function renderValidation(){
+      const c = state.computed;
+      const notes = [
+        [c.totalFinal<=125000, `Techo USD 125,000. Actual: USD ${fmt(c.totalFinal)}`],
+        [c.overheadPct<=12, `Overhead ≤ 12%. Actual: ${fmt(c.overheadPct)}%`],
+        [c.capexPct<=25, `CAPEX ≤ 25%. Actual: ${fmt(c.capexPct)}%`],
+        [c.trainingPct>=10, `Capacitación + cambio ≥ 10%. Actual: ${fmt(c.trainingPct)}%`],
+        [c.auditPct>=8, `Auditoría/compliance ≥ 8%. Actual: ${fmt(c.auditPct)}%`],
+        [c.contPct>=5 && c.contPct<=8, `Contingencia 5% a 8%. Actual: ${fmt(c.contPct)}%`],
+        [c.pao1Pct>=45, `PAO1 ≥ 45%. Actual: ${fmt(c.pao1Pct)}%`],
+        [c.pao2Pct<=55, `PAO2 ≤ 55%. Actual: ${fmt(c.pao2Pct)}%`],
+        [state.rows.filter(r => r.comment.trim()).length>=8, `Justificación en al menos 8 rubros. Actual: ${state.rows.filter(r => r.comment.trim()).length}`],
+        [state.rows.some(r => r.item.toLowerCase().includes("seguridad")), `Existe rubro de seguridad/soporte operativo.`]
+      ];
+      byId("statusList").innerHTML = notes.map(v => statusLine(v[0], v[1])).join("");
+    }
+
+    function drawCharts(){
+      const c = state.computed;
+      drawBarChart(byId("catChart"), c.cats, "USD");
+      drawDonut(byId("paoChart"), {"PAO1": c.pao1 || 0, "PAO2": c.pao2 || 0});
+    }
+
+    function drawBarChart(canvas, dataObj, unitLabel){
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      const entries = Object.entries(dataObj || {});
+      if (!entries.length) return;
+      const max = Math.max(...entries.map(e=>e[1]), 1);
+      const left = 70, top = 24, bottom = h-30, chartW = w-left-20;
+      const step = (bottom-top)/entries.length;
+      ctx.fillStyle = '#f6fbff'; ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle = '#d8e6ff'; ctx.strokeRect(.5,.5,w-1,h-1);
+
+      entries.forEach((e,i)=>{
+        const y = top + i*step + 8;
+        const bw = (e[1]/max) * chartW;
+        const grad = ctx.createLinearGradient(left,y,left+bw,y+14);
+        grad.addColorStop(0,'#2aa0f0'); grad.addColorStop(1,'#1672c8');
+        ctx.fillStyle = grad;
+        ctx.fillRect(left,y,bw,16);
+        ctx.fillStyle = '#1f466f'; ctx.font = '12px Inter, sans-serif';
+        ctx.fillText(e[0].slice(0,25), 8, y+12);
+        ctx.fillText(`${unitLabel} ${Number(e[1]).toLocaleString('en-US',{maximumFractionDigits:0})}`, left + bw + 6, y+12);
+      });
+    }
+
+    function drawDonut(canvas, dataObj){
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      const vals = Object.values(dataObj || {});
+      const labels = Object.keys(dataObj || {});
+      const total = vals.reduce((a,b)=>a+b,0) || 1;
+      const cx = w/2, cy = h/2, r = 82;
+      const colors = ['#1f85d0','#34c3be','#6e78ff','#ffa752'];
+      let start = -Math.PI/2;
+      ctx.fillStyle='#f6fbff'; ctx.fillRect(0,0,w,h); ctx.strokeStyle='#d8e6ff'; ctx.strokeRect(.5,.5,w-1,h-1);
+
+      vals.forEach((v,i)=>{
+        const ang = (v/total) * Math.PI*2;
+        ctx.beginPath();
+        ctx.moveTo(cx,cy);
+        ctx.arc(cx,cy,r,start,start+ang);
+        ctx.closePath();
+        ctx.fillStyle = colors[i%colors.length];
+        ctx.fill();
+        start += ang;
+      });
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath(); ctx.arc(cx,cy,46,0,Math.PI*2); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle='#1a446f'; ctx.font='bold 14px Inter'; ctx.textAlign='center';
+      ctx.fillText('PAO',cx,cy-2); ctx.font='12px Inter'; ctx.fillText('Distribución',cx,cy+16);
+      labels.forEach((lb,i)=>{
+        const y = h - 42 + i*16;
+        ctx.fillStyle = colors[i%colors.length]; ctx.fillRect(18+i*170, y-10, 12, 12);
+        ctx.fillStyle='#1e4d78';
+        ctx.fillText(`${lb}: ${(vals[i]*100/total).toFixed(2)}%`, 94+i*170, y);
+      });
+      ctx.textAlign='start';
+    }
+
+    function renderQuiz(){
+      const qWrap = byId("quizContainer"); qWrap.innerHTML = "";
+      questionDefs.forEach(q => {
+        const div = document.createElement("div"); div.className = "q-card";
+        let html = `<label>${q.text}</label>`;
+        if (q.type === "num") html += `<input type="number" step="0.01" data-q="${q.id}">`;
+        if (q.type === "mcq") html += q.options.map(opt => `<label style="display:block;font-weight:400;"><input type="radio" name="${q.id}" value="${opt[0]}" data-q="${q.id}"> ${opt}</label>`).join("");
+        if (q.type === "open") html += `<textarea data-q="${q.id}" placeholder="Respuesta"></textarea>`;
+        html += `<details><summary>Pista</summary><p class="small">${q.hint}</p></details>`;
+        div.innerHTML = html;
+        qWrap.appendChild(div);
+      });
+      qWrap.querySelectorAll("input,textarea").forEach(el => {
+        el.addEventListener("input", e => {
+          const q = e.target.dataset.q;
+          if (e.target.type === "radio") {
+            const selected = qWrap.querySelector(`input[name="${q}"]:checked`);
+            state.quizAnswers[q] = selected ? selected.value : "";
+          } else state.quizAnswers[q] = e.target.value;
+        });
+      });
+    }
+
+    function countWords(t){ return (t.trim().match(/\S+/g)||[]).length; }
+    function wordsBetween(t,min,max){ const w=countWords(t); return w>=min && w<=max; }
+    function qualitative(n){ if(n>=90) return 'Excelente'; if(n>=80) return 'Muy bueno'; if(n>=70) return 'Bueno'; if(n>=60) return 'Suficiente'; return 'Insuficiente'; }
+
+    function scoreAll(){
+      const c = state.computed; const sb=[]; const add=(name,pts,detail)=>sb.push({name,pts,detail});
+      const scorePercentBound = (actual, target, maxPts, type) => {
+        const ok = type === "max" ? actual <= target : actual >= target;
+        if (ok) return maxPts;
+        return Math.abs(actual-target) <= 1 ? maxPts-3 : 0;
+      };
+
+      let a1 = 10;
+      if (c.totalFinal>125000) a1 = c.totalFinal-125000<=500 ? 5 : 0;
+      add('A1 Techo', a1, `Total ${fmt(c.totalFinal)}`);
+      add('A2 Overhead', scorePercentBound(c.overheadPct,12,10,'max'), `${fmt(c.overheadPct)}%`);
+      add('A3 CAPEX', scorePercentBound(c.capexPct,25,10,'max'), `${fmt(c.capexPct)}%`);
+      add('A4 Capacitación+cambio', scorePercentBound(c.trainingPct,10,10,'min'), `${fmt(c.trainingPct)}%`);
+      add('A5 Auditoría/compliance', scorePercentBound(c.auditPct,8,10,'min'), `${fmt(c.auditPct)}%`);
+
+      let a6c = scorePercentBound(c.contPct,5,5,'min');
+      if (c.contPct>8) a6c = Math.abs(c.contPct-8)<=1 ? 2 : 0;
+      let a6p = (c.pao1Pct>=45 && c.pao2Pct<=55) ? 5 : 0;
+      if (!a6p && Math.max(45-c.pao1Pct, c.pao2Pct-55)<=1) a6p = 2;
+      add('A6 Contingencia + PAO', a6c+a6p, `Cont ${fmt(c.contPct)}%, PAO1 ${fmt(c.pao1Pct)}%, PAO2 ${fmt(c.pao2Pct)}%`);
+
+      const corr = { p1:c.totalFinal, p2:c.overheadPct, p3:c.trainingPct, p4:c.capexPct };
+      ['p1','p2','p3','p4'].forEach(pid => {
+        const ans = Number(state.quizAnswers[pid]);
+        const target = corr[pid];
+        const tol = pid==='p1' ? target*0.005 : 0.1;
+        add(pid.toUpperCase(), Math.abs(ans-target)<=tol ? 6 : 0, `Resp: ${isNaN(ans)?'N/A':fmt(ans)} / Correcto: ${fmt(target)}`);
+      });
+
+      ['p5','p6','p7','p8'].forEach(pid => {
+        const q = questionDefs.find(x=>x.id===pid);
+        add(pid.toUpperCase(), state.quizAnswers[pid]===q.answer ? 3 : 0, `Resp: ${state.quizAnswers[pid]||'N/A'}`);
+      });
+
+      const p9 = (state.quizAnswers.p9||'').trim();
+      const p9ok = wordsBetween(p9,80,120) && /etl/i.test(p9) && /modelo/i.test(p9) && /mlops/i.test(p9) && /adop/i.test(p9) && /(riesgo|drift|sesgo|continuidad|cumplimiento)/i.test(p9);
+      add('P9 abierta', p9ok?2:0, `Palabras: ${countWords(p9)}`);
+      const p10 = (state.quizAnswers.p10||'').trim();
+      const p10ok = wordsBetween(p10,60,100) && (p10.match(/riesgo/gi)||[]).length>=2 && (p10.match(/mitig|control|conting|limitaci/gi)||[]).length>=2;
+      add('P10 abierta', p10ok?2:0, `Palabras: ${countWords(p10)}`);
+
+      return { total: sb.reduce((a,b)=>a+b.pts,0), sb };
+    }
+
+    function buildFeedback(){
+      const c = state.computed;
+      const f = [];
+      if (c.totalFinal>125000) f.push(`Excede techo en USD ${fmt(c.totalFinal-125000)}; reduzca nube/consultoría o CAPEX para volver a límite.`);
+      if (c.capexPct>25) f.push(`Su CAPEX es ${fmt(c.capexPct)}%; reduzca 1 servidor o laptops para bajar ≤25%.`);
+      if (c.trainingPct<10) f.push(`Capacitación+cambio ${fmt(c.trainingPct)}%; incremente rubros 12/13 para superar 10%.`);
+      if (c.auditPct<8) f.push(`Auditoría/compliance ${fmt(c.auditPct)}%; refuerce validación/documentación.`);
+      if (c.overheadPct>12) f.push(`Overhead ${fmt(c.overheadPct)}%; ajuste porcentaje administrativo.`);
+      if (c.contPct<5 || c.contPct>8) f.push(`Contingencia ${fmt(c.contPct)}%; ajuste entre 5% y 8%.`);
+      if (c.pao1Pct<45) f.push(`PAO1 ${fmt(c.pao1Pct)}%; mueva actividades base al primer semestre.`);
+      if (c.pao2Pct>55) f.push(`PAO2 ${fmt(c.pao2Pct)}%; redistribuya ejecución temprana.`);
+      if (!f.length) f.push('Cumple restricciones duras con adecuada coherencia técnico-financiera.');
+      if (state.rows.filter(r=>r.comment.trim()).length<8) f.push('Complete justificación en al menos 8 rubros para trazabilidad.');
+      f.push('Riesgos residuales a vigilar: calidad de datos, sesgo y continuidad operativa.');
+      return f;
+    }
+
+    function renderResults(){
+      const scored = scoreAll();
+      const fb = buildFeedback();
+      byId('finalScore').textContent = `${scored.total}/100`;
+      byId('qualitative').textContent = `Calificación cualitativa: ${qualitative(scored.total)}`;
+      byId('feedbackList').innerHTML = fb.map(x=>`<li>${x}</li>`).join('');
+      byId('scoreBreakdown').innerHTML = scored.sb.map(s=>`<li><strong>${s.name}:</strong> ${s.pts} pts <span class='small'>(${s.detail})</span></li>`).join('');
+      state.lastScore = scored;
+      state.lastFeedback = fb;
+    }
+
+    function downloadPdf(){
+      if (!window.jspdf || !window.jspdf.jsPDF) { byId('pdfWarning').classList.remove('hidden'); return; }
+      byId('pdfWarning').classList.add('hidden');
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({unit:'pt', format:'a4'});
+      const c = state.computed;
+      let y=36;
+      const line = (t,inc=14) => { doc.text(String(t),36,y); y+=inc; if(y>790){ doc.addPage(); y=36; } };
+      doc.setFontSize(12); line('Resultado de evaluación de presupuesto');
+      doc.setFontSize(10);
+      line(`Nombre: ${state.student.name}`); line(`ID intento: ${state.student.id}`); line(`Fecha/hora: ${new Date().toLocaleString()}`);
+      y+=6; line('Resumen del caso: implementación de plataforma de riesgo crediticio con MLOps, auditoría y adopción sujeta a restricciones del fondo.');
+      y+=8; line('Resumen por categorías (totales y %):');
+      Object.entries(c.cats).forEach(([k,v]) => line(`- ${k}: USD ${fmt(v)} (${fmt((v*100)/(c.totalFinal||1))}%)`));
+      y+=8; line('Rubros detallados:');
+      state.rows.forEach(r => line(`#${r.id} ${r.item} | Cant ${r.qty} | Unit ${fmt(r.unitCost)} | Total ${fmt(r.total||0)} | ${r.pao} | ${r.comment||'(sin comentario)'}`));
+      y+=8; line('Respuestas P1-P10:');
+      questionDefs.forEach(q => line(`${q.id.toUpperCase()}: ${state.quizAnswers[q.id] || '(sin respuesta)'}`));
+      y+=8; line('Puntaje por criterio:');
+      state.lastScore.sb.forEach(s => line(`- ${s.name}: ${s.pts} pts`));
+      line(`TOTAL: ${state.lastScore.total}/100 (${qualitative(state.lastScore.total)})`);
+      y+=8; line('Observaciones automáticas:');
+      state.lastFeedback.forEach(f => line(`- ${f}`));
+      y+=8; line('Generado automáticamente — evaluación formativa de presupuestación (nivel maestría)');
+      const safeName = state.student.name.replace(/\s+/g,'_').replace(/[^\wÁÉÍÓÚáéíóúÑñ_-]/g,'');
+      doc.save(`Resultado_Presupuesto_${safeName}_${state.student.id}.pdf`);
+    }
+
+    byId('btnStart').addEventListener('click', () => {
+      const name = byId('studentName').value.trim();
+      const valid = name.length>=8 && name.split(/\s+/).length>=2;
+      byId('nameError').classList.toggle('hidden', valid);
+      if (!valid) return;
+      state.student.name = name;
+      state.student.email = byId('studentEmail').value.trim();
+      state.student.id = `${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
+      state.student.startedAt = new Date().toISOString();
+      showScreen('case'); updateProgress(0);
     });
-  }
 
-  function scoreAll(){
-    const c = state.computed;
-    const sb = [];
-    const add = (name, pts, detail) => sb.push({name, pts, detail});
+    byId('backToStart').addEventListener('click', ()=>{ showScreen('start'); updateProgress(0); });
+    byId('caseRead').addEventListener('change', e=> byId('toBudget').disabled = !e.target.checked);
+    byId('toBudget').addEventListener('click', ()=>{ showScreen('budget'); updateProgress(1); recalc(); });
+    byId('backToCase').addEventListener('click', ()=>{ showScreen('case'); updateProgress(0); });
+    byId('toQuiz').addEventListener('click', ()=>{ showScreen('quiz'); updateProgress(2); renderQuiz(); });
+    byId('backToBudget').addEventListener('click', ()=>{ showScreen('budget'); updateProgress(1); });
+    byId('toResults').addEventListener('click', ()=>{ renderResults(); showScreen('results'); updateProgress(3); });
+    byId('backToQuiz').addEventListener('click', ()=>{ showScreen('quiz'); updateProgress(2); });
+    byId('btnPdf').addEventListener('click', downloadPdf);
 
-    const scorePercentBound = (actual, target, maxPts, type) => {
-      const ok = type === "max" ? actual <= target : actual >= target;
-      if (ok) return maxPts;
-      const diff = Math.abs(actual - target);
-      return diff <= 1 ? maxPts - 3 : 0;
-    };
-
-    let a1 = 10;
-    if (c.totalFinal > 125000) a1 = (c.totalFinal - 125000 <= 500) ? 5 : 0;
-    add("A1 Techo", a1, `Total ${fmt(c.totalFinal)}`);
-    add("A2 Overhead", scorePercentBound(c.overheadPct, 12, 10, "max"), `${fmt(c.overheadPct)}%`);
-    add("A3 CAPEX", scorePercentBound(c.capexPct, 25, 10, "max"), `${fmt(c.capexPct)}%`);
-    add("A4 Capacitación+cambio", scorePercentBound(c.trainingPct, 10, 10, "min"), `${fmt(c.trainingPct)}%`);
-    add("A5 Auditoría/compliance", scorePercentBound(c.auditPct, 8, 10, "min"), `${fmt(c.auditPct)}%`);
-
-    let a6c = scorePercentBound(c.contPct, 5, 5, "min");
-    if (c.contPct > 8) a6c = Math.abs(c.contPct-8) <= 1 ? 2 : 0;
-    let a6p = (c.pao1Pct>=45 && c.pao2Pct<=55) ? 5 : 0;
-    if (!a6p && Math.max(45-c.pao1Pct, c.pao2Pct-55) <= 1) a6p = 2;
-    add("A6 Contingencia + PAO", a6c + a6p, `Cont ${fmt(c.contPct)}%, PAO1 ${fmt(c.pao1Pct)}%, PAO2 ${fmt(c.pao2Pct)}%`);
-
-    const corr = {
-      p1: c.totalFinal,
-      p2: c.overheadPct,
-      p3: c.trainingPct,
-      p4: c.capexPct
-    };
-    ["p1","p2","p3","p4"].forEach(pid => {
-      const ans = Number(state.quizAnswers[pid]);
-      const target = corr[pid];
-      const tol = pid === "p1" ? target * 0.005 : 0.1;
-      const pts = Math.abs(ans-target) <= tol ? 6 : 0;
-      add(pid.toUpperCase(), pts, `Resp: ${isNaN(ans)?"N/A":fmt(ans)} / Correcto: ${fmt(target)}`);
-    });
-
-    ["p5","p6","p7","p8"].forEach(pid => {
-      const q = questionDefs.find(x => x.id===pid);
-      add(pid.toUpperCase(), state.quizAnswers[pid]===q.answer ? 3 : 0, `Resp: ${state.quizAnswers[pid]||"N/A"}`);
-    });
-
-    const p9 = (state.quizAnswers.p9||"").trim();
-    const p9ok = wordsBetween(p9,80,120) && /etl/i.test(p9) && /modelo/i.test(p9) && /mlops/i.test(p9) && /adop/i.test(p9) && /(riesgo|drift|sesgo|continuidad|cumplimiento)/i.test(p9);
-    add("P9 abierta", p9ok ? 2 : 0, `Palabras: ${countWords(p9)}`);
-
-    const p10 = (state.quizAnswers.p10||"").trim();
-    const riskHits = (p10.match(/riesgo/gi)||[]).length;
-    const mitHits = (p10.match(/mitig|control|conting|limitaci/gi)||[]).length;
-    const p10ok = wordsBetween(p10,60,100) && riskHits>=2 && mitHits>=2;
-    add("P10 abierta", p10ok ? 2 : 0, `Palabras: ${countWords(p10)}`);
-
-    const total = sb.reduce((a,b)=>a+b.pts,0);
-    return {total, sb};
-  }
-
-  function countWords(t){ return (t.trim().match(/\S+/g)||[]).length; }
-  function wordsBetween(t,min,max){ const w = countWords(t); return w>=min && w<=max; }
-
-  function qualitative(n){ if (n>=90) return "Excelente"; if (n>=80) return "Muy bueno"; if (n>=70) return "Bueno"; if (n>=60) return "Suficiente"; return "Insuficiente"; }
-
-  function buildFeedback(){
-    const c = state.computed;
-    const f = [];
-    if (c.totalFinal>125000) f.push(`Excede techo en USD ${fmt(c.totalFinal-125000)}; reduzca nube/consultoría o CAPEX para volver a límite.`);
-    if (c.capexPct>25) f.push(`CAPEX en ${fmt(c.capexPct)}%; reduzca 1 servidor o laptops para bajar ≤25%.`);
-    if (c.trainingPct<10) f.push(`Capacitación+cambio en ${fmt(c.trainingPct)}%; incremente rubros 12/13 para adopción.`);
-    if (c.auditPct<8) f.push(`Auditoría/compliance en ${fmt(c.auditPct)}%; refuerce validación/documentación.`);
-    if (c.overheadPct>12) f.push(`Overhead en ${fmt(c.overheadPct)}%; ajuste porcentaje administrativo.`);
-    if (c.contPct<5 || c.contPct>8) f.push(`Contingencia en ${fmt(c.contPct)}%; ajuste entre 5% y 8%.`);
-    if (c.pao1Pct<45) f.push(`PAO1 bajo (${fmt(c.pao1Pct)}%); mueva construcción base al primer semestre.`);
-    if (c.pao2Pct>55) f.push(`PAO2 alto (${fmt(c.pao2Pct)}%); redistribuya ejecución temprana.`);
-    if (!f.length) f.push("Cumple restricciones duras con adecuada coherencia técnico-financiera.");
-    if (state.rows.filter(r => r.comment.trim()).length<8) f.push("Agregue justificación en al menos 8 rubros para trazabilidad de decisiones.");
-    f.push("Revise riesgos residuales: calidad de datos, sesgo del modelo y continuidad ante incidentes.");
-    return f;
-  }
-
-  function renderResults(){
-    const scored = scoreAll();
-    const fb = buildFeedback();
-    byId("finalScore").textContent = `${scored.total}/100`;
-    byId("qualitative").textContent = `Calificación cualitativa: ${qualitative(scored.total)}`;
-    byId("feedbackList").innerHTML = fb.map(x=>`<li>${x}</li>`).join("");
-    byId("scoreBreakdown").innerHTML = scored.sb.map(s=>`<li><strong>${s.name}:</strong> ${s.pts} pts <span class="small">(${s.detail})</span></li>`).join("");
-    state.lastScore = scored;
-    state.lastFeedback = fb;
-  }
-
-  function downloadPdf(){
-    if (!window.jspdf || !window.jspdf.jsPDF) { byId("pdfWarning").classList.remove("hidden"); return; }
-    byId("pdfWarning").classList.add("hidden");
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({unit:"pt", format:"a4"});
-    let y = 36;
-    const line = (t, inc=14) => { doc.text(String(t), 36, y); y += inc; if (y > 790) { doc.addPage(); y = 36; } };
-    const c = state.computed;
-
-    doc.setFontSize(12);
-    line("Resultado de evaluación de presupuesto");
-    doc.setFontSize(10);
-    line(`Nombre: ${state.student.name}`); line(`ID intento: ${state.student.id}`); line(`Fecha/hora: ${new Date().toLocaleString()}`);
-    y += 4; line("Resumen del caso: Implementación de plataforma de riesgo crediticio con MLOps, auditoría y adopción, sujeta a restricciones de fondo y sostenibilidad.");
-    y += 8; line("Resumen por categorías (total y %):");
-    Object.entries(c.cats).forEach(([k,v]) => line(`- ${k}: USD ${fmt(v)} (${fmt(v*100/c.totalFinal)}%)`));
-    y += 8; line("Rubros detallados:");
-    state.rows.forEach(r => line(`#${r.id} ${r.item} | Cant ${r.qty} | Unit ${fmt(r.unitCost)} | Total ${fmt(r.total||0)} | ${r.pao} | ${r.comment||"(sin comentario)"}`));
-    y += 8; line("Respuestas cuestionario:");
-    questionDefs.forEach(q => line(`${q.id.toUpperCase()}: ${state.quizAnswers[q.id] || "(sin respuesta)"}`));
-    y += 8; line("Puntaje por criterio:");
-    state.lastScore.sb.forEach(s => line(`- ${s.name}: ${s.pts} pts`));
-    line(`TOTAL: ${state.lastScore.total}/100 (${qualitative(state.lastScore.total)})`);
-    y += 8; line("Observaciones automáticas:");
-    state.lastFeedback.forEach(f => line(`- ${f}`));
-    y += 10;
-    line("Generado automáticamente — evaluación formativa de presupuestación (nivel maestría)");
-
-    const safeName = state.student.name.replace(/\s+/g,"_").replace(/[^\wÁÉÍÓÚáéíóúÑñ_-]/g,"");
-    doc.save(`Resultado_Presupuesto_${safeName}_${state.student.id}.pdf`);
-  }
-
-  byId("btnStart").addEventListener("click", () => {
-    const name = byId("studentName").value.trim();
-    const valid = name.length >= 8 && name.split(/\s+/).length >= 2;
-    byId("nameError").classList.toggle("hidden", valid);
-    if (!valid) return;
-    state.student.name = name;
-    state.student.email = byId("studentEmail").value.trim();
-    state.student.id = `${Date.now()}-${Math.random().toString(36).slice(2,6)}`;
-    state.student.startedAt = new Date().toISOString();
-    updateProgress(0); showScreen("case");
-  });
-
-  byId("backToStart").addEventListener("click", () => { showScreen("start"); updateProgress(0); });
-  byId("caseRead").addEventListener("change", e => byId("toBudget").disabled = !e.target.checked);
-  byId("toBudget").addEventListener("click", () => { showScreen("budget"); updateProgress(1); recalc(); });
-  byId("backToCase").addEventListener("click", () => { showScreen("case"); updateProgress(0); });
-
-  byId("toQuiz").addEventListener("click", () => { showScreen("quiz"); updateProgress(2); renderQuiz(); });
-  byId("backToBudget").addEventListener("click", () => { showScreen("budget"); updateProgress(1); });
-
-  byId("toResults").addEventListener("click", () => { renderResults(); showScreen("results"); updateProgress(3); });
-  byId("backToQuiz").addEventListener("click", () => { showScreen("quiz"); updateProgress(2); });
-  byId("btnPdf").addEventListener("click", downloadPdf);
-
-  renderTable();
-  recalc();
-})();
-</script>
+    renderTable();
+    recalc();
+  })();
+  </script>
 </body>
 </html>
